@@ -1,0 +1,37 @@
+services:
+  # Backend server
+  api:
+    build: ./backend
+    container_name: api_container
+    command: bash -c "python manage.py runserver 0.0.0.0:8000 && python manage.py migrate"
+    volumes:
+      - ./backend:/backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=TRUE
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
+      - CELERY_BROKER=redis://redis:6379/0
+      - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+  # Cronjobs
+  celery:
+    restart: unless-stopped
+    build: ./backend
+    container_name: celery_container
+    command: bash -c "celery -A api worker -l INFO && celery -A api beat"
+    volumes:
+      - ./backend:/backend
+    depends_on:
+      - redis
+  redis:
+    image: "redis:alpine"
+  # React
+  client:
+    container_name: client_container
+    build: ./client
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/client
