@@ -4,23 +4,39 @@ from graphql_relay.node.node import from_global_id
 
 from . import models
 import json
+from django.contrib.auth.models import User
 
+
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
 class MessageType(DjangoObjectType):
     class Meta:
         model =  models.Message
         interfaces = (graphene.Node, )
+        fields = "__all__"
 
 class Query(graphene.ObjectType):
     all_messages = graphene.List(MessageType)
     
     message = graphene.Field(MessageType, id=graphene.ID())
 
-    def resolve_message(self, args, context, info):
-        rid = from_global_id(args.get('id'))
+    current_user = graphene.Field(UserType)
+
+    @staticmethod
+    def resolve_current_user(root,info,*args,**kwargs):
+        if not info.context.user.is_authenticated:
+            return None
+        return info.context.user
+
+    @staticmethod
+    def resolve_message(root,info,*args,**kwargs):
+        rid = from_global_id(kwargs.get('id'))
         # rid is a tuple: ('MessageType', '1')
         return models.Message.objects.get(pk=rid[1])
 
-    def resolve_all_messages(self, args, context, info):
+    @staticmethod
+    def resolve_all_messages(root, info):
         return models.Message.objects.all()
 
 class CreateMessageMutation(graphene.Mutation):

@@ -20,7 +20,7 @@ from django.conf.urls import url
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import refresh_jwt_token
 from rest_framework_jwt.views import verify_jwt_token
-
+from . import schema
 
 from django.views.decorators.csrf import csrf_exempt
 
@@ -28,8 +28,8 @@ from graphene_django.views import GraphQLView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^graphiql', csrf_exempt(GraphQLView.as_view(graphiql=True))),
-    url(r'^gql', csrf_exempt(GraphQLView.as_view(batch=True))),
+    url(r'^graphiql', csrf_exempt(GraphQLView.as_view(graphiql=True,schema=schema.schema))),
+    url(r'^gql', csrf_exempt(GraphQLView.as_view())),
     url(r'^api-token-auth/', obtain_jwt_token),
     url(r'^api-token-refresh/', refresh_jwt_token),
     url(r'^api-token-verify/', verify_jwt_token),

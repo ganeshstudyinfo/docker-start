@@ -54,11 +54,11 @@ services:
     container_name: client_container
     build: ./client
     command: >
-      sh -c "npm install --force or --legacy-peer-deps && npm start"
+      sh -c "npm install --legacy-peer-deps && npm start"
     ports:
       - "3000:3000"
     volumes:
       - ./client:/client
       - /client/node_modules
-
+# && npm install --force or --legacy-peer-deps
 # # sh -c "pytest --cov-report html --cov . && #       open htmlcov/index.html"

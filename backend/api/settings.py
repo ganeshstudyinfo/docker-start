@@ -71,8 +71,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.JWTMiddleware',
     # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
 ]
+
+JWT_VERIFY_EXPIRATION = False
+
 
 ROOT_URLCONF = 'api.urls'
 

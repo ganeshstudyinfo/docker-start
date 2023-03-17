@@ -9,13 +9,27 @@ import ListView from './views/ListView';
 import LoginView from './views/LoginView';
 import LogoutView from './views/LogoutView';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink } from '@apollo/client';
-import { BatchHttpLink } from "apollo-link-batch-http";
+import { setContext } from '@apollo/client/link/context';
 
+
+const httpLink = createHttpLink({
+  uri: 'http://localhost:8000/gql/',
+});
+
+const authLink = setContext((_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const token = localStorage.getItem('token');
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `JWT ${token}` : "",
+    }
+  }
+});
 
 const client = new ApolloClient({
-  link: BatchHttpLink({
-    uri: 'http://localhost:8000/gql/'
-  }),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
 });
 

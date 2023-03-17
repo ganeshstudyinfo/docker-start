@@ -7,7 +7,7 @@ class Queries(
     simple_app.schema.Query,
     graphene.ObjectType
 ):
-    dummy = graphene.String()
+    pass
     
 
 class Mutations(
