@@ -1,10 +1,11 @@
-FROM node:14.17.1
+FROM node:alpine
 
 WORKDIR /client
 
-COPY . .
+# COPY package*.json /client/
+# RUN npm install
 
-RUN npm install
+COPY . .
 
 EXPOSE 3000
 

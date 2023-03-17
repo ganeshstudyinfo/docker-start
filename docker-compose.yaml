@@ -1,26 +1,47 @@
+version: '3.8'
+
 services:
   # Backend server
   api:
-    build: ./backend
+    restart: unless-stopped
+    build:
+      context: ./backend
     container_name: api_container
-    command: bash -c "python manage.py runserver 0.0.0.0:8000 && python manage.py migrate"
+    command: >
+      sh -c "python manage.py makemigrations &&
+             python manage.py migrate &&
+             python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/backend
     ports:
       - "8000:8000"
     environment:
       - DEBUG=TRUE
-      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 0.0.0.0
       - CELERY_BROKER=redis://redis:6379/0
       - CELERY_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+  # Pytest
+  pytest:
+    build:
+      context: ./backend
+    container_name: pytest_backend
+    command: >
+      sh -c "pytest --cov-report html --cov ."
+    volumes:
+      - ./backend:/backend
     depends_on:
       - redis
   # Cronjobs
   celery:
     restart: unless-stopped
-    build: ./backend
+    build:
+      context: ./backend
     container_name: celery_container
-    command: bash -c "celery -A api worker -l INFO && celery -A api beat"
+    command: >
+      sh -c "celery -A api worker -l INFO &&
+            celery -A api beat"
     volumes:
       - ./backend:/backend
     depends_on:
@@ -29,9 +50,15 @@ services:
     image: "redis:alpine"
   # React
   client:
+    restart: always
     container_name: client_container
     build: ./client
+    command: >
+      sh -c "npm install --force or --legacy-peer-deps && npm start"
     ports:
       - "3000:3000"
     volumes:
       - ./client:/client
+      - /client/node_modules
+
+# # sh -c "pytest --cov-report html --cov . && #       open htmlcov/index.html"
