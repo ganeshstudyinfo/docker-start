@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'graphene_django',
     'rest_framework',
     'corsheaders',
+    "django_filters",
     # custom_apps
     'simple_app'
 ]

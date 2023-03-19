@@ -6,6 +6,8 @@ from . import models
 import json
 from django.contrib.auth.models import User
 
+from graphene_django.filter.fields import DjangoFilterConnectionField
+
 
 class UserType(DjangoObjectType):
     class Meta:
@@ -13,11 +15,14 @@ class UserType(DjangoObjectType):
 class MessageType(DjangoObjectType):
     class Meta:
         model =  models.Message
-        interfaces = (graphene.Node, )
         fields = "__all__"
+        filter_fields={'message':['exact', 'icontains', 'istartswith']}
+        interfaces = (graphene.Node, )
+        # use_connection = True
 
 class Query(graphene.ObjectType):
-    all_messages = graphene.List(MessageType)
+    # all_messages = graphene.List(MessageType)
+    all_messages = DjangoFilterConnectionField(MessageType)
     
     message = graphene.Field(MessageType, id=graphene.ID())
 
@@ -48,10 +53,10 @@ class CreateMessageMutation(graphene.Mutation):
     message = graphene.Field(MessageType)
     
     @staticmethod
-    def mutate(root,args,context,info):
-        if not context.user.is_authenticated:
+    def mutate(root,info,*args,**kwargs):
+        if not info.context.user.is_authenticated:
             return CreateMessageMutation(status=403)
-        message = args.get("message","").strip()
+        message = kwargs.get("message","").strip()
         # Here we would usually use Django forms to validate the input
         if not message:
             return CreateMessageMutation(
@@ -61,8 +66,9 @@ class CreateMessageMutation(graphene.Mutation):
                 )
             )
         obj = models.Message.objects.create(
-            user=context.user, message=message
+            user=info.context.user, message=message
         )
+        print(obj)
         return CreateMessageMutation(status=200, message=obj)
 
 

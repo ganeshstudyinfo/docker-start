@@ -9,3 +9,4 @@ graphene-django
 djangorestframework
 djangorestframework-jwt
 django-cors-headers
+django-filter
