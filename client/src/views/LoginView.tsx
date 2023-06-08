@@ -5,7 +5,7 @@ const LoginView = () => {
         username: "",
         password: ""
     })
-    console.log(table)
+    console.log(tables)
     const handleSubmit = (e) => {
         e.preventDefault()
         let data = new FormData();
