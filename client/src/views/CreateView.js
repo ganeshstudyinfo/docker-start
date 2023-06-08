@@ -40,9 +40,9 @@ const CreateView = () => {
         createMessageMutate({ variables: { message: data.get("message") } })
     }
 
-    if (!loading && data.currentUser === null) {
-        window.location.replace('/login/')
-    }
+    // if (!loading && data.currentUser === null) {
+    //     window.location.replace('/login/')
+    // }
     if (loading) {
         return <div>Loading...</div>
     }

@@ -6,18 +6,27 @@ from . import models
 import json
 from django.contrib.auth.models import User
 
-from graphene_django.filter.fields import DjangoFilterConnectionField
+from graphene_django.filter import DjangoFilterConnectionField
+from django_filters import FilterSet
 
 
 class UserType(DjangoObjectType):
     class Meta:
         model = User
+
+class MessageFilter(FilterSet):
+    class Meta:
+        model = models.Message
+        fields={
+            'message':['icontains'],
+            'user__email':['icontains']
+        }
 class MessageType(DjangoObjectType):
     class Meta:
         model =  models.Message
-        fields = "__all__"
-        filter_fields={'message':['exact', 'icontains', 'istartswith']}
         interfaces = (graphene.Node, )
+        fields = "__all__"
+        filterset_class = MessageFilter
         # use_connection = True
 
 class Query(graphene.ObjectType):
@@ -37,11 +46,10 @@ class Query(graphene.ObjectType):
     @staticmethod
     def resolve_message(root,info,*args,**kwargs):
         rid = from_global_id(kwargs.get('id'))
-        # rid is a tuple: ('MessageType', '1')
         return models.Message.objects.get(pk=rid[1])
 
     @staticmethod
-    def resolve_all_messages(root, info):
+    def resolve_all_messages(root, info,*args,**kwargs):
         return models.Message.objects.all()
 
 class CreateMessageMutation(graphene.Mutation):

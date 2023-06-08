@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   # Backend server
-  api:
+  api_project:
     restart: unless-stopped
     build:
       context: ./backend
-    container_name: api_container
+    container_name: api_project_container
     command: >
       sh -c "python manage.py makemigrations &&
              python manage.py migrate &&
@@ -49,9 +49,9 @@ services:
   redis:
     image: "redis:alpine"
   # React
-  client:
+  client_project:
     restart: always
-    container_name: client_container
+    container_name: client_project_container
     build: ./client
     command: >
       sh -c "npm install --legacy-peer-deps && npm start"
@@ -59,6 +59,6 @@ services:
       - "3000:3000"
     volumes:
       - ./client:/client
-      - /client/node_modules
-# && npm install --force or --legacy-peer-deps
-# # sh -c "pytest --cov-report html --cov . && #       open htmlcov/index.html"
+      # - /client/node_modules
+      # && npm install --force or --legacy-peer-deps
+      # # sh -c "pytest --cov-report html --cov . && #       open htmlcov/index.html"
