@@ -12,15 +12,13 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Docker Compose
-        uses: docker/compose-cli-action@v0.8.0
-        with:
-          compose-file: docker-compose.yaml
+        run: |
+          sudo apt-get install -y docker-compose
 
-      - name: Build and tag Docker images
-        run: docker-compose build
-
-      - name: Push Docker images to registry
-        run: docker-compose push
+      - name: Build and push Docker images
+        run: |
+          docker-compose build
+          docker-compose push
