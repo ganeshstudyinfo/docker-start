@@ -62,3 +62,8 @@ services:
       # - /client/node_modules
       # && npm install --force or --legacy-peer-deps
       # # sh -c "pytest --cov-report html --cov . && #       open htmlcov/index.html"
+  client_build:
+    build:
+      context: ./client
+    command: >
+      sh -c "npm install --legacy-peer-deps && npm run build"
