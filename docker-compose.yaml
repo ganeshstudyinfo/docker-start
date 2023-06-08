@@ -23,7 +23,7 @@ services:
     depends_on:
       - redis
   # Pytest
-  pytest:
+  pytest_123:
     build:
       context: ./backend
     container_name: pytest_backend
