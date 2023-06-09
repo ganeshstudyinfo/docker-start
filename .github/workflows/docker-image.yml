@@ -18,7 +18,13 @@ jobs:
         run: |
           sudo apt-get install -y docker-compose
 
-      - name: Build and push Docker images
-        run: |
-          docker-compose build
-          docker-compose up pytest_123
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          compose-file: docker-compose.yaml
+
+      - name: Build and test pytest
+        run: docker-compose run pytest_123
+
+      - name: Build and test client_build
+        run: docker-compose run client_build
