@@ -18,8 +18,5 @@ jobs:
         run: |
           sudo apt-get install -y docker-compose
 
-      # - name: Build and test pytest
-      #   run: docker-compose run pytest_123
-
       - name: Build and test client_build
         run: docker-compose run client_build
